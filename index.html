@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Uniform(height) Sankey</title>
+<style>
+
+.node rect {
+  cursor: move;
+  fill-opacity: .9;
+  shape-rendering: crispEdges;
+}
+
+.node text {
+  pointer-events: none;
+  text-shadow: 0 1px 0 #fff;
+}
+
+.node.ranked{
+  stroke:#000;
+  stroke-width:3;
+}
+
+.parsets.tooltip { opacity: 1; }
+/*.link {
+  fill: none;
+  stroke: #000;
+  stroke-opacity: .2;
+}*/
+
+/*.link:hover {
+  stroke-opacity: .7;
+}*/
+
+</style>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="css/d3.parsets.css">
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="lib/underscore-min.js"></script>
+<script type="text/javascript"  src="lib/crossfilter.min.js"></script>
+<script src="lib/sankey.js"></script>
+<script src="lib/d3.parsets.js"></script>
+
+<script src="js/predata.js"></script>
+<script src="js/clusterBubble.js"></script>
+<script src="js/majorSankey.js"></script>
+<script src="js/main.js"></script>
+<body>
+<div class="row">
+  
+  <div id="majorSankey" class="col-md-6"></div>
+  <div id="legend" class="col-md-3">
+  <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
+  <div id="slider" style="width:200px;"></div>
+  <div id="story" class="col-md-3"></div>
+</div>
+</div>
+<div class="row">
+  <div id="fitParset" class="col-md-6"></div>
+  <div class="col-md-6">
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-default active" id="all">
+        <input type="radio" name="options"> T1
+      </label>
+      <label class="btn btn-default" id="changeT2">
+        <input type="radio" name="options"> T2
+      </label>
+      <label class="btn btn-default" id="changeT3">
+        <input type="radio" name="options"> T3
+      </label>
+      <div id="cluster"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+</script>
+
+</body>
+</html>
+
+
+
