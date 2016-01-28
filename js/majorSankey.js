@@ -22,10 +22,13 @@ function MajorSankey(){
                     .append("svg")
                     .attr("height", height + margin.top + margin.bottom);
 
-    var encode_legend=legend_group.append("g");
+    var size_legend=legend_group.append("g")
+                      .attr("transform","translate(0,30)")
+                      // .attr("class","sizeLegend");
     var major_legend=legend_group
                     .append("g")
-                    .attr("transform","translate(0,40)");
+                    .attr("transform","translate(0,120)")
+                    // .attr("class","majorLegend");
 
 
     // Set the sankey diagram properties
@@ -90,31 +93,32 @@ function MajorSankey(){
     .layout(32);
     
     //node scale
-    var maxVal_node=d3.max(_.pluck(graph.nodes,"value"));
-    var minVal_node=d3.min(_.pluck(graph.nodes,"value"));
-    var nodeScale=d3.scale.sqrt()
-                    .domain([minVal_node,maxVal_node])
+    STATE.maxVal_node=d3.max(_.pluck(graph.nodes,"value"));
+    STATE.minVal_node=d3.min(_.pluck(graph.nodes,"value"));
+    STATE.nodeScale=d3.scale.sqrt()
+                    .domain([STATE.minVal_node,STATE.maxVal_node])
                     .range([10,50]);
     //link scale
-    var maxVal_links=d3.max(_.pluck(graph.links,"value"));
-    var minVal_links=d3.min(_.pluck(graph.links,"value"));
+    STATE.maxVal_link=d3.max(_.pluck(graph.links,"value"));
+    STATE.minVal_link=d3.min(_.pluck(graph.links,"value"));
     
-    var linkScale=d3.scale.sqrt()
-                    .domain([minVal_links,maxVal_links])
+    STATE.linkScale=d3.scale.sqrt()
+                    .domain([STATE.minVal_link,STATE.maxVal_link])
                     .range([1,10]);
-    
+
+
     $("#slider").slider({
-      value:1,
-    min: minVal_links,
-    max: maxVal_links,
-    slide: function( event, ui ) {
-      $("#amount").val( ui.value );
-    },
-    stop: function( event, ui ) {
-      updateLinks();
-    }
-  });
-  $("#amount").val($("#slider").slider("value"));
+        value:1,
+        min: STATE.minVal_link,
+        max: STATE.maxVal_link,
+        slide: function( event, ui ) {
+          $("#amount").val( ui.value );
+        },
+        stop: function( event, ui ) {
+          updateLinks();
+        }
+      });
+     $("#amount").val($("#slider").slider("value"));
     // add in the links
     var link = svg.append("g")
       .attr("class", "links")
@@ -136,7 +140,7 @@ function MajorSankey(){
           d3.select(this).style("stroke-opacity", ".5") } )
         .on("mouseout", function() { d3.select(this).style("stroke-opacity", ".2") } )
         .style("stroke-width", function (d) {
-            return linkScale(d.value);
+            return STATE.linkScale(d.value);
         })
         .sort(function (a, b) {
             return b.dy - a.dy;
@@ -147,7 +151,7 @@ function MajorSankey(){
         .text(function (d) {
             var sourceid=d.source.name.substring(2,d.source.name.length)
             var targetid=d.target.name.substring(2,d.target.name.length)
-            return  (_.invert(STATE.majorIDMap))[sourceid]+ " → " +(_.invert(STATE.majorIDMap))[targetid] + "\n" + d.value+"\n"+linkScale(d.value);
+            return  (_.invert(STATE.majorIDMap))[sourceid]+ " → " +(_.invert(STATE.majorIDMap))[targetid] + "\n" + d.value;
         });
 
     // add in the nodes
@@ -215,12 +219,12 @@ function MajorSankey(){
     //     });
   node.append("rect")
       .attr("x", function (d) {
-          return -nodeScale(d.value)/2;
+          return -STATE.nodeScale(d.value)/2;
       })
       .attr("y", function (d) {
           return -sankey.nodeWidth()/2;
       })
-        .attr("width", function(d) { return nodeScale(d.value); })
+        .attr("width", function(d) { return STATE.nodeScale(d.value); })
         .attr("height", sankey.nodeWidth())
         .style("fill", function(d) { 
       return d.color = STATE.majorFill(d.name.substring(2,d.name.length)); })
@@ -312,15 +316,23 @@ function MajorSankey(){
         //   remainingNodes = nextNodes;
         // }
         //highlight same major node
-        var selected_majorid=node.name.substring(2,node.name.length);
-        var selected_nodes=d3.select(".sankey").selectAll(".node")
+        var highlight_majorid=node.name.substring(2,node.name.length);
+        var highlight_nodes=d3.select(".sankey").selectAll(".node")
             .filter(function(d){
               var majorid=d.name.substring(2,d.name.length);
-              return majorid===selected_majorid; 
-            })
-        selected_nodes.classed("ranked", function(d){
-          return !d3.select(this).classed("ranked");
+              return majorid===highlight_majorid; 
+            });
+
+        var highlight_legend=d3.selectAll(".majorLegend").filter(function(d){ 
+            return d.id===highlight_majorid;});
+
+        highlight_nodes.classed("highlight", function(d){
+          return !d3.select(this).classed("highlight");
         });
+        highlight_legend.classed("highlight", function(d){
+          return !d3.select(this).classed("highlight");
+        });
+
   }
 
   function highlight_link(id,opacity){
@@ -346,78 +358,58 @@ function MajorSankey(){
         .on("mouseover", function() { d3.select(this).style("stroke-opacity", ".7") } )
         .on("mouseout", function() { d3.select(this).style("stroke-opacity", ".2") } )
         .style("stroke-width", function (d) {
-            return linkScale(d.value);
+            return STATE.linkScale(d.value);
         })
         .sort(function (a, b) {
             return b.dy - a.dy;
         });
     }
      majorLegend(major_legend);
-     sizeLegend(encode_legend);
+     sizeLegend(size_legend);
 
 }
 
-
-
-
-
-
-
-
-// // load the data (using the timelyportfolio csv method)
-// d3.csv("student_flow_aggregated_file.csv", function(error, data) {
-// // d3.csv("idg.csv", function(error, data) {
-
-//   extendAttr(data);
-//   var cf = crossfilter(data);
-
-//   var T12=cf.dimension(function(d){return "T1"+d["T1_Level2_id"]+"|"+"T2"+d["T2_Level2_id"];})
-//           .group().reduceSum(function(d){return d.count;}).top(Infinity);
-//   var T23=cf.dimension(function(d){return "T2"+d["T2_Level2_id"]+"|"+"T3"+d["T3_Level2_id"];})
-//           .group().reduceSum(function(d){return d.count;}).top(Infinity);
-  
-  
-  
-//     // the function for moving the nodes
-//     function dragmove(d) {
-//         d3.select(this).attr("transform",
-//             "translate(" + (
-//         d.x = Math.max(0, Math.min(width - d.dx, d3.event.x))) + "," + (
-//         d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))) + ")");
-//         sankey.relayout();
-//         link.attr("d", path);
-//     };
-//     function highlight_link_links(){
-
-//     }
-
-
-
   function majorLegend(group) {
-    var itemHeight = 14;
-    var padding = 4;
+    var itemHeight = 12;
+    var padding = 3;
     var majorData=[];
     //map STATE.majorIDMap
-    console.log(STATE.majorIDMap);
+
     _.each(STATE.majorIDMap,function(key,value){
+
       majorData.push({
-        id:key,
+        id:key.toString(),
         name:value
       })
     })
-    console.log(majorData)
-    var item = group.selectAll(".MajorLegendItem").data(majorData)
+   
+    var item = group.selectAll(".majorLegend").data(majorData)
                 .enter().append("g")
-                .attr("class", "MajorLegendItem")
+                .attr("class", "majorLegend")
                 .attr("transform", function(d, i) {
                     return "translate(" + padding/2 + "," + (i*(itemHeight + 2*padding) + padding) + ")";
-                });
+                })
+                .on("mouseover",function(d){
+                     var highlight_majorid=d.id;
+                     d3.select(this).classed("highlight",true);
+                     var highlight_nodes=d3.select(".sankey").selectAll(".node")
+                      .filter(function(d){
+                        var majorid=d.name.substring(2,d.name.length);
+                        return majorid===highlight_majorid; 
+                      }); 
+                      highlight_nodes.classed("highlight",true);
+                  })
+                  .on("mouseout",function(d){
+                    d3.select(this).classed("highlight",false);
+                    d3.select(".sankey").selectAll(".node").classed("highlight",false);
+                  });
 
     item.append("rect")
         .attr("width", itemHeight)
         .attr("height", itemHeight)
         .style("fill", function(d, i) {return STATE.majorFill(d.id);})
-        .style("stroke", "white");
+        // .style("stroke", "white");
+       
 
     item.append("text")
         .attr("x", itemHeight + padding/2)
@@ -430,32 +422,71 @@ function MajorSankey(){
           return d.name;});
   }
   function sizeLegend(group) {
-        // var circleSize = [];
-        // var circleText = [1,5,10,15];
-        
-        // circleSize[0] = 2;
-        
-        // for (var i=1;i<4;i++) {
-        //     circleSize[i] = 0.6*i*5 + 2;   
-        // }
-        
-        // var circleSize = group.selectAll(".cLegend")
-        //     .data(circleSize)
-        //     .enter().append("circle")
-        //     .attr("class", "cLegend")
-        //     .attr("cx", function(d,i) { return 120; })
-        //     .attr("cy", 78)
-        //     .attr("r", function(d) { return d; })
-        //     .attr("fill", "black");
-        
-        // circleSize.transition().duration(1000).attr("cx", function(d,i) { return 120 + i*30; })
-        
-        // group.selectAll(".cLegendLabels")
-        //     .data(circleText)
-        //     .enter().append("text")
-        //     .attr("class", "cLegendLabels")
-        //     .attr("x", function(d,i) { return 120 + i*30; })
-        //     .attr("y", 58)
-        //     .attr("text-anchor", "middle")
-        //     .text(function (d) { return d });
+    var nodeSample = [STATE.minVal_node,10*STATE.minVal_node,STATE.maxVal_node/10,STATE.maxVal_node];
+    var nodeSampleData=[];
+    _.each(nodeSample,function(d){
+      nodeSampleData.push({
+        count:d,
+        size:STATE.nodeScale(d)
+      })
+    });
+
+    var linkSample = [STATE.minVal_link,10*STATE.minVal_link,STATE.maxVal_link/10,STATE.maxVal_link];
+    var linkSampleData=[];
+    _.each(linkSample,function(d){
+      linkSampleData.push({
+        count:d,
+        size:STATE.linkScale(d)
+      })
+    });
+
+    var node_legend=group.append("g")
+          .attr("class","nodesizeLegend");
+
+    node_legend.selectAll(".nodeLegend")
+          .data(nodeSampleData)
+          .enter().append("rect")
+          .attr("class", "nodeLegend")
+          .attr("x", function (d,i) { return i*50+10; })
+          .attr("y", function(d,i) { return -d.size/2 ;})
+          .attr("width",10)
+          .attr("height", function(d,i) { return d.size; })
+          .style("opacity", 0.7)
+          .style("shape-rendering", "crispEdges")
+          .attr("fill","#ffffff")
+          .attr("stroke", "#000000");
+
+    node_legend.selectAll(".nodesizeText")
+                .data(nodeSampleData)
+                .enter().append("text")
+                  .attr("class", "nodesizeText")
+                  .attr("x", function (d,i) { return i*50+10; })
+                  .attr("y", 40)
+                  .style("text-anchor", "middle")
+                  .text(function(d,i) { return d.count; });
+
+  var link_legend=group.append("g")
+      .attr("class","nodesizeLegend")
+
+  link_legend.attr("transform","translate(0,60)")
+      .selectAll(".linkLegend")
+      .data(linkSampleData)
+      .enter().append("rect")
+      .attr("class", "linkLegend")
+      .attr("x", function (d,i) { return i*50+10; })
+      .attr("y", function(d,i) { return -d.size/2;})
+      .attr("width",function(d,i) { return d.size; })
+      .attr("height", function(d,i) { return d.size; })
+      .style("opacity", 0.7)
+      .style("shape-rendering", "crispEdges")
+      .attr("fill", "#9C9C9C");
+  link_legend.selectAll(".nodesizeText")
+                .data(linkSampleData)
+                .enter().append("text")
+                  .attr("class", "nodesizeText")
+                  .attr("x", function (d,i) { return i*50+10; })
+                  .attr("y", 20)
+                  .style("text-anchor", "middle")
+                  .text(function(d,i) { return d.count; });
+         
 }
