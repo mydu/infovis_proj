@@ -93,7 +93,7 @@ function generateCluster(){
     console.log(cluster);
 
     var min=d3.min(_.pluck(cluster,"value").filter(function(num){return num>10;}));
-    console.log(min);
+    // console.log(min);
     var sampleData=[];
 
     cluster.forEach(function(d){

@@ -3,7 +3,8 @@ d3.csv("data/student_flow_aggregated_file.csv", function(error, data) {
 	extendAttr(data);
 	aggAttr(data);
 	console.log(data)
-	MajorSankey();
+	STATE.majorSankey=new MajorSankey();
+	STATE.majorSankey.update();
 	STATE.clusterBubble=new ClusterBubble();
 	STATE.clusterBubble.update();
 

@@ -88,6 +88,7 @@ function ClusterBubble(){
 
       draw('all');
       $( ".btn" ).click(function() {
+        $(this).addClass("active").siblings().removeClass("active");
         draw(this.id);
     });
 
