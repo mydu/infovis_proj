@@ -3,7 +3,7 @@ var STATE = {
     majorList: [],
     majorFill: d3.scale.category20(),
     majorLegend: null,
-    terms: ["T1_Level2", "T2_Level2", "T3_Level2"],
+    terms: ["HighestLevel2","T1_Level2", "T2_Level2", "T3_Level2"],
     scores: ["33-36", "28-32", "24-27", "20-23", "16-19", "1-15"],
     scoreIDMap: null,
     fitGrades: ["Poor", "Moderate", "Good"],
@@ -59,6 +59,7 @@ function extendAttr(data){
 function aggAttr(data) {
     STATE.cf = crossfilter(data);
 
+    STATE.cf["HighestLevel2_id"] = STATE.cf.dimension(function(d) {return d["HighestLevel2_id"];})
     STATE.cf["T1_Level2_id"] = STATE.cf.dimension(function(d) {return d["T1_Level2_id"];})
     STATE.cf["T2_Level2_id"] = STATE.cf.dimension(function(d) {return d["T2_Level2_id"];})
     STATE.cf["T3_Level2_id"] = STATE.cf.dimension(function(d) {return d["T3_Level2_id"];})
@@ -90,7 +91,7 @@ function generateCluster(){
     
     var cluster =STATE.cf.dimension(function(d) {return d["Gender"]+"|"+STATE.scoreIDMap.get(d["actcat"])+"|"+d["changeT2"]+"|"+d["changeT3"]})
                          .group().reduceSum(function(d){return d.count;}).top(Infinity);
-    console.log(cluster);
+    // console.log(cluster);
 
     var min=d3.min(_.pluck(cluster,"value").filter(function(num){return num>10;}));
     // console.log(min);

@@ -14,7 +14,16 @@ function MajorSankey(){
               .attr("class","sankey")
               .attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
-              
+    var canvas=svg.append("rect")
+                    .attr("calss","sankey_canvas")
+                    .style("fill","#eeeeee")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .on("click",function(){
+                      console.log("clear")
+                      clearFilter();
+                      STATE.majorSankey.update();
+                    })      
 
     var legend_group=d3.select("#legend")
                     .append("svg")
@@ -43,16 +52,20 @@ function MajorSankey(){
     this.update=function(){
 
       d3.select("#major").selectAll("g").remove();
+
         //set up graph in same style as original example but empty
+      console.log([STATE.T12,STATE.T23]);
       var graph = {"nodes" : [], "links" : []};
 
         _.each([STATE.T12,STATE.T23],function(data){
           _.each(data,function(d){
-            graph.nodes.push({ "name": d.key.split("|")[0] });
+            if(d.value>0){
+              graph.nodes.push({ "name": d.key.split("|")[0] });
               graph.nodes.push({ "name": d.key.split("|")[1] });
               graph.links.push({ "source": d.key.split("|")[0],
                                "target": d.key.split("|")[1],
                                "value": d.value });
+            }  
           })
         })
     
@@ -88,14 +101,14 @@ function MajorSankey(){
       //node scale
       STATE.maxVal_node=d3.max(_.pluck(graph.nodes,"value"));
       STATE.minVal_node=d3.min(_.pluck(graph.nodes,"value"));
-      STATE.nodeScale=d3.scale.sqrt()
+      STATE.nodeScale=d3.scale.linear()
                       .domain([STATE.minVal_node,STATE.maxVal_node])
                       .range([10,50]);
       //link scale
       STATE.maxVal_link=d3.max(_.pluck(graph.links,"value"));
       STATE.minVal_link=d3.min(_.pluck(graph.links,"value"));
       
-      STATE.linkScale=d3.scale.sqrt()
+      STATE.linkScale=d3.scale.linear()
                       .domain([STATE.minVal_link,STATE.maxVal_link])
                       .range([1,10]);
 
@@ -186,12 +199,27 @@ function MajorSankey(){
           .on("click",function(d,i){
            // var interact_mode="click";
            // highlight_node_links(d,i,this,interact_mode);
-           clearFilter()
+           clearFilter();
            var term=d.name.substring(0,2);
+           if (term==="T1"){
+              STATE.T12=STATE.cf.dimension(function(d){return "T1"+d["HighestLevel2_id"]+"|"+"T2"+d["T2_Level2_id"];})
+                    .group().reduceSum(function(d){return d.count;}).top(Infinity);
+           }
+           if(term==="T2"){
+              STATE.T12=STATE.cf.dimension(function(d){return "T1"+d["T1_Level2_id"]+"|"+"T2"+d["HighestLevel2_id"];})
+                    .group().reduceSum(function(d){return d.count;}).top(Infinity);
+
+              STATE.T23=STATE.cf.dimension(function(d){return "T2"+d["HighestLevel2_id"]+"|"+"T3"+d["T3_Level2_id"];})
+              .group().reduceSum(function(d){return d.count;}).top(Infinity);
+           }
+           if (term==="T3"){
+              STATE.T23=STATE.cf.dimension(function(d){return "T2"+d["T2_Level2_id"]+"|"+"T3"+d["HighestLevel2_id"];})
+              .group().reduceSum(function(d){return d.count;}).top(Infinity);
+           }
            var majorid=d.name.substring(2,d.name.length);
            STATE.cf[term+"_Level2_id"].filterExact(majorid);
            STATE.clusterBubble.update();
-           // STATE.majorSankey.update();
+           STATE.majorSankey.update();
            updateParsets();
           })
     
@@ -260,6 +288,33 @@ function MajorSankey(){
                     // .attr("class","majorLegend");
       majorLegend(major_legend);
       sizeLegend(size_legend);
+
+      function updateLinks(){
+      d3.select(".links").selectAll("path").remove();
+      d3.select(".links").selectAll(".link")
+       .data(graph.links)
+        .enter()
+        .append("path")
+        .attr("id", function(d,i){
+          d.id = i;
+          return "link-"+i;
+        })
+        .filter(function(d){ return d.value >$("#slider").slider("value");})
+        .attr("class", "link")
+        .attr("d", path)
+        .style("fill", "none")
+        .style("stroke", "tan")
+        .style("stroke-opacity", ".33")
+        .on("mouseover", function() { d3.select(this).style("stroke-opacity", ".7") } )
+        .on("mouseout", function() { d3.select(this).style("stroke-opacity", ".2") } )
+        .style("stroke-width", function (d) {
+            return STATE.linkScale(d.value);
+        })
+        .sort(function (a, b) {
+            return b.dy - a.dy;
+        });
+    }
+}
     }
 
 
@@ -354,32 +409,6 @@ function MajorSankey(){
     d3.select("#link-"+id).style("stroke-opacity", opacity);
   }
 
-  function updateLinks(){
-      d3.select(".links").selectAll("path").remove();
-      d3.select(".links").selectAll(".link")
-       .data(graph.links)
-        .enter()
-        .append("path")
-        .attr("id", function(d,i){
-          d.id = i;
-          return "link-"+i;
-        })
-        .filter(function(d){ return d.value >$("#slider").slider("value");})
-        .attr("class", "link")
-        .attr("d", path)
-        .style("fill", "none")
-        .style("stroke", "tan")
-        .style("stroke-opacity", ".33")
-        .on("mouseover", function() { d3.select(this).style("stroke-opacity", ".7") } )
-        .on("mouseout", function() { d3.select(this).style("stroke-opacity", ".2") } )
-        .style("stroke-width", function (d) {
-            return STATE.linkScale(d.value);
-        })
-        .sort(function (a, b) {
-            return b.dy - a.dy;
-        });
-    }
-}
 
   function majorLegend(group) {
     var itemHeight = 12;
