@@ -9,14 +9,14 @@ d3.csv("data/student_flow_aggregated_file.csv", function(error, data) {
 	STATE.clusterBubble.update();
 
 	STATE.parsetGroup= d3.select("#fitParset").append("svg")
-              .attr("width", 500)
+              .attr("width", 550)
               .attr("height", 400)
               .append("g")
               .attr("class","parset")
               .attr("transform", "rotate(-90)translate(-400,0)");
     STATE.fitParset = d3.parsets()
 		    .width(400)
-		    .height(500)
+		    .height(550)
 		    .dimensions(STATE.fits)
 		    .value(function(d) {return d.count;})
 		    // .tooltip(function(d){return d.count;})

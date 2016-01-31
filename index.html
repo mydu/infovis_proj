@@ -2,16 +2,23 @@
 <meta charset="utf-8">
 <title>ACT College Students Migration</title>
 <style>
-
-.node rect {
-  cursor: move;
-  fill-opacity: .9;
-  shape-rendering: crispEdges;
+/*body{
+  font-family: Lato;
+}*/
+#story{
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  width: 200px;
 }
 
-.node text {
-  pointer-events: none;
-  text-shadow: 0 1px 0 #fff;
+rect {
+  fill-opacity: .9;
+  shape-rendering: crispEdges;
+  cursor: pointer;
+}
+
+h1,p,text{
+  font-family: Lato;
 }
 
 .highlight{
@@ -19,11 +26,10 @@
 }
 
 .parsets.tooltip { opacity: 1; }
-/*.link {
-  fill: none;
-  stroke: #000;
+
+.link{
   stroke-opacity: .2;
-}*/
+}
 
 /*.link:hover {
   stroke-opacity: .7;
@@ -49,18 +55,37 @@
 <script src="js/majorSankey.js"></script>
 <script src="js/main.js"></script>
 <body>
+<div id="title">
+  <h1>Student Migration</h1>
+</div>
+
 <div class="row" id="major">
   
+  <div id="chart_title" class="col-md-12">
+    <h2>Major Chart</h2>
+  </div>
   <div id="majorSankey" class="col-md-6"></div>
   <div id="legend" class="col-md-3">
-  <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
-  <div id="slider" style="width:200px;"></div>
-  <div id="story" class="col-md-3"></div>
+    <div id="size_legend"></div>
+    <div id="size_slider">
+      <p>Filter links greater than <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
+      </p>
+
+      <div id="slider" style="width:160px; margin-left:10px;"></div>
+    
+    </div>
+    <div id="major_legend"></div>
+  </div>
+   <div id="story" class="col-md-3">
+     <p>Data Fact</p>
+   </div>
 </div>
-</div>
-<div class="row">
-  <div id="fitParset" class="col-md-6"></div>
+<div class="row" id="Demand">
+  <div id="fitParset" class="col-md-6">
+    <h2>Fit Chart</h2>
+  </div>
   <div class="col-md-6">
+     <h2>Cluster Chart</h2>
     <div class="btn-group" data-toggle="buttons">
       <label class="btn btn-default active" id="all">
         <input type="radio" name="options"> T1
