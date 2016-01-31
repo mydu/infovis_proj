@@ -2,9 +2,9 @@ function MajorSankey(){
 
   var margin = {
         top: 60,
-        right: 50,
+        right: 80,
         bottom: 20,
-        left: 50
+        left: 80
     },
     width = 600- margin.left - margin.right,
     height = 600- margin.top - margin.bottom;
@@ -139,14 +139,30 @@ function MajorSankey(){
               .enter()
               .append("text")
               .attr("class", "term")
-              .attr("x",function(d,i){
-                console.log(d);
-                return i*245;})
+              .attr("x",function(d,i){return i*215;})
               .attr("y",-30)
               .text(function(d){
                 if (d===STATE.selectTerm) return d+"/"+STATE.selectMajor;
-                else return d;})
-              .style("text-anchor", "middle");
+                else return d;
+              })
+              .style("text-anchor", "middle")
+              // .style("text-anchor", function(d){
+              //   if (d===STATE.selectTerm){
+              //         if (d==="T1") return "start";
+              //         if (d==="T2") return "middle";
+              //         if (d==="T3") return "end";
+              //   }
+              // })
+              .each(function(d,i){
+                if (d===STATE.selectTerm){
+                  d3.select(this).append("tspan")
+                                .attr("dy",15)
+                                .attr("x",i*215)
+                                .text("Highest Interested Major")
+                                .style("text-anchor", "middle")
+                }
+              });
+              
       // add in the links
       var link = sankey_g.append("g")
           .attr("class", "links")
@@ -166,13 +182,13 @@ function MajorSankey(){
           .on("mouseover", function(d) {
             d3.selectAll(".link").style("stroke-opacity", ".1");
             d3.select(this).style("stroke-opacity", ".7");
-            d3.select("#"+d.target.name).classed("highlight",true);
-            d3.select("#"+d.source.name).classed("highlight",true);
+            d3.select("#"+d.target.name).selectAll("rect").classed("highlight",true);
+            d3.select("#"+d.source.name).selectAll("rect").classed("highlight",true);
           } )
           .on("mouseout", function(d) { 
             d3.selectAll(".link").style("stroke-opacity", ".2");
-            d3.select("#"+d.target.name).classed("highlight",false);
-            d3.select("#"+d.source.name).classed("highlight",false); 
+            d3.select("#"+d.target.name).selectAll("rect").classed("highlight",false);
+            d3.select("#"+d.source.name).selectAll("rect").classed("highlight",false); 
           })
           .style("stroke-width", function (d) {
               return STATE.linkScale(d.value);
@@ -209,12 +225,14 @@ function MajorSankey(){
           .on("mouseover",function(d,i){
             var interact_mode="hover";
             highlight_node_links(d,i,this,interact_mode);
-            d3.select(this).select("text").text(function(d){return d.value;})
+            d3.select(this).select("text").text(function(d){return d.value;});
+             d3.select(this).select('rect').classed("highlight",true);
           })
           .on("mouseout",function(d,i){
             var interact_mode="hover";
             highlight_node_links(d,i,this,interact_mode);
             d3.select(this).select("text").text(null);
+            d3.select(this).select("rect").classed("highlight",false);
           })
           .on("click",function(d,i){
            // var interact_mode="click";
@@ -224,7 +242,9 @@ function MajorSankey(){
            var term=d.name.substring(0,2);
            var majorid=d.name.substring(2,d.name.length);
            STATE.selectTerm=term;
+           STATE.selectMajorid=majorid;
            STATE.selectMajor=_.invert(STATE.majorIDMap)[majorid];
+
            if (term==="T1"){
               STATE.T12=STATE.cf.dimension(function(d){return "T1"+d["HighestLevel2_id"]+"|"+"T2"+d["T2_Level2_id"];})
                     .group().reduceSum(function(d){return d.count;}).top(Infinity);
@@ -286,14 +306,20 @@ function MajorSankey(){
         })
           .attr("width", function(d) { return STATE.nodeScale(d.value); })
           .attr("height", sankey.nodeWidth())
-          .style("fill", function(d) { 
-        return d.color = STATE.majorFill(d.name.substring(2,d.name.length)); })
-      //   .style("stroke", function(d) { 
-        // return d3.rgb(d.color).darker(2); })
-      .append("title")
-        .text(function(d) { 
-          var majorid=d.name.substring(2,d.name.length)
-          return (_.invert(STATE.majorIDMap))[majorid] + "\n" + d.value; });
+          .style("fill", function(d) {
+            var majorid=d.name.substring(2,d.name.length);
+            return STATE.majorFill(majorid); })
+          .attr("stroke", function(d) { 
+            var term=d.name.substring(0,2);
+            var majorid=d.name.substring(2,d.name.length); 
+            if(term===STATE.selectTerm) return STATE.majorFill(STATE.selectMajorid);
+            // else return STATE.majorFill(majorid);
+          })
+          .attr("stroke-width",3)
+          .append("title")
+          .text(function(d) { 
+            var majorid=d.name.substring(2,d.name.length)
+            return (_.invert(STATE.majorIDMap))[majorid] + "\n" + d.value; });
 
       // add in the title for the nodes
       node.append("text")
@@ -443,18 +469,18 @@ function MajorSankey(){
                 })
                 .on("mouseover",function(d){
                      var highlight_majorid=d.id;
-                     d3.select(this).classed("highlight",true);
+                     d3.select(this).selectAll("rect").classed("highlight",true);
                      var highlight_nodes=d3.select(".sankey").selectAll(".node")
                       .filter(function(d){
                         var majorid=d.name.substring(2,d.name.length);
                         return majorid===highlight_majorid; 
                       }); 
-                      highlight_nodes.classed("highlight",true);
+                      highlight_nodes.selectAll("rect").classed("highlight",true);
                       highlight_nodes.selectAll("text").text(function(d){return d.value;})
                   })
                   .on("mouseout",function(d){
-                    d3.select(this).classed("highlight",false);
-                    d3.select(".sankey").selectAll(".node").classed("highlight",false);
+                    d3.select(this).selectAll("rect").classed("highlight",false);
+                    d3.select(".sankey").selectAll(".node").selectAll("rect").classed("highlight",false);
                     
                     var highlight_majorid=d.id;
                     var highlight_nodes=d3.select(".sankey").selectAll(".node")
