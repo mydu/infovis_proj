@@ -2,9 +2,9 @@
 <meta charset="utf-8">
 <title>ACT College Students Migration</title>
 <style>
-/*body{
-  font-family: Lato;
-}*/
+body{
+  background-color: #f0f0f0 !important;
+}
 #story{
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -12,7 +12,6 @@
 }
 
 rect {
-  fill-opacity: .9;
   shape-rendering: crispEdges;
   cursor: pointer;
 }
@@ -56,19 +55,19 @@ h1,p,text{
 <script src="js/main.js"></script>
 <body>
 <div id="title">
-  <h1>Student Migration</h1>
+  <h1 class="text-center">Student Migration</h1>
 </div>
 
 <div class="row" id="major">
   
   <div id="chart_title" class="col-md-12">
-    <h2>Major Chart</h2>
+    <h2 class="text-center">Major Chart</h2>
   </div>
   <div id="majorSankey" class="col-md-6"></div>
   <div id="legend" class="col-md-3">
     <div id="size_legend"></div>
     <div id="size_slider">
-      <p>Filter links greater than <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
+      <p>Filter links greater than <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold; width:50px">
       </p>
 
       <div id="slider" style="width:160px; margin-left:10px;"></div>
@@ -82,11 +81,11 @@ h1,p,text{
 </div>
 <div class="row" id="Demand">
   <div id="fitParset" class="col-md-6">
-    <h2>Fit Chart</h2>
+    <h2 class="text-center">Fit Chart</h2>
   </div>
   <div class="col-md-6">
-     <h2>Cluster Chart</h2>
-    <div class="btn-group" data-toggle="buttons">
+     <h2 class="text-center">Cluster Chart</h2>
+      <div class="btn-group" data-toggle="buttons">
       <label class="btn btn-default active" id="all">
         <input type="radio" name="options"> T1
       </label>
@@ -96,7 +95,7 @@ h1,p,text{
       <label class="btn btn-default" id="changeT3">
         <input type="radio" name="options"> T3
       </label>
-    </div>
+    </div>    
     <div id="cluster"></div>
   </div>
 </div>

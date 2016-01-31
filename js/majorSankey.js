@@ -4,7 +4,7 @@ function MajorSankey(){
         top: 60,
         right: 80,
         bottom: 20,
-        left: 80
+        left: 110
     },
     width = 600- margin.left - margin.right,
     height = 600- margin.top - margin.bottom;
@@ -16,7 +16,7 @@ function MajorSankey(){
               .attr("height", height + margin.top + margin.bottom)
     var canvas=svg.append("rect")
                     .attr("calss","sankey_canvas")
-                    .style("fill","#eeeeee")
+                    .style("fill","#f0f0f0")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
                     .on("click",function(){
@@ -139,7 +139,7 @@ function MajorSankey(){
               .enter()
               .append("text")
               .attr("class", "term")
-              .attr("x",function(d,i){return i*215;})
+              .attr("x",function(d,i){return i*200;})
               .attr("y",-30)
               .text(function(d){
                 if (d===STATE.selectTerm) return d+"/"+STATE.selectMajor;
@@ -157,7 +157,7 @@ function MajorSankey(){
                 if (d===STATE.selectTerm){
                   d3.select(this).append("tspan")
                                 .attr("dy",15)
-                                .attr("x",i*215)
+                                .attr("x",i*200)
                                 .text("Highest Interested Major")
                                 .style("text-anchor", "middle")
                 }
@@ -200,9 +200,12 @@ function MajorSankey(){
       // add the link titles
       link.append("title")
           .text(function (d) {
+              var sourceterm=d.source.name.substring(0,2);
+              var targetterm=d.target.name.substring(0,2);
               var sourceid=d.source.name.substring(2,d.source.name.length)
               var targetid=d.target.name.substring(2,d.target.name.length)
-              return  (_.invert(STATE.majorIDMap))[sourceid]+ " → " +(_.invert(STATE.majorIDMap))[targetid] + "\n" + d.value;
+              // return  (_.invert(STATE.majorIDMap))[sourceid]+ " → " +(_.invert(STATE.majorIDMap))[targetid] + "\n" + d.value;
+              return d.value+" students from "+(_.invert(STATE.majorIDMap))[sourceid]+"("+sourceterm+") to "+(_.invert(STATE.majorIDMap))[targetid]+"("+targetterm+")";
           });
 
       // add in the nodes
@@ -318,34 +321,34 @@ function MajorSankey(){
           .attr("stroke-width",3)
           .append("title")
           .text(function(d) { 
+            var term=d.name.substring(0,2);
             var majorid=d.name.substring(2,d.name.length)
-            return (_.invert(STATE.majorIDMap))[majorid] + "\n" + d.value; });
-
+            if (term===STATE.selectTerm) {
+              return d.value+" students whose highest interest major is "+(_.invert(STATE.majorIDMap))[majorid]
+                      +" choose major "+(_.invert(STATE.majorIDMap))[STATE.selectMajorid]+" at term "+STATE.selectTerm;
+            }
+            else return d.value+" students choose "+(_.invert(STATE.majorIDMap))[majorid]+" at Term "+term; 
+          });
+            // return (_.invert(STATE.majorIDMap))[majorid] + "\n" + d.value; });
+            
       // add in the title for the nodes
       node.append("text")
           .attr("y", sankey.nodeWidth()*2)
           // .text(function (d) { return d.value})
           .attr("font-size", 12)
           .style("text-anchor", "middle")
-      
-      // var size_legend=legend_group.append("g")
-      //                 .attr("transform","translate(0,30)")
-      //                 // .attr("class","sizeLegend");
-      // var major_legend=legend_group
-      //               .append("g")
-      //               .attr("transform","translate(0,120)")
-      //               // .attr("class","majorLegend");
+
       majorLegend(major_legend);
       sizeLegend(size_legend);
 
-    function updateLinks(){
-      d3.select(".links").selectAll(".link")
-        .style("display", "block")
-        .filter(function(d){ return d.value <$("#slider").slider("value");})
-        .style("display", "none")
-    }
+      function updateLinks(){
+        d3.select(".links").selectAll(".link")
+          .style("display", "block")
+          .filter(function(d){ return d.value <$("#slider").slider("value");})
+          .style("display", "none")
+      }
+  }
 }
-    }
 
 
     function highlight_node_links(node,i,thisnode,mode){
@@ -444,8 +447,8 @@ function MajorSankey(){
 
 
   function majorLegend(svg) {
-    var itemHeight = 12;
-    var padding = 3;
+    var itemHeight = 14;
+    var padding = 4;
     var majorData=[];
     //map STATE.majorIDMap
 
@@ -540,14 +543,16 @@ function MajorSankey(){
         size:STATE.linkScale(d)
       })
     });
-    svg.attr("height",90);
+    svg.attr("height",140);
+
     svg.append("text")
-    .attr("transform","translate(0,10)")
-    .text("Node Encoding");
+    .attr("transform","translate(0,30)")
+    .text("Node Encoding")
+    .attr("stroke-width",2);
 
     var node_legend=svg.append("g")
           .attr("class","nodesizeLegend")
-          .attr("transform","translate(0,30)");
+          .attr("transform","translate(0,60)");
     
     node_legend.append("text")
               .text(STATE.minVal_node)
@@ -582,12 +587,13 @@ function MajorSankey(){
     //               .text(function(d,i) { return d.count; });
     
     svg.append("text")
-      .attr("transform","translate(0,60)")
-      .text("Link Encoding");
+      .attr("transform","translate(0,110)")
+      .text("Link Encoding")
+      .attr("stroke-width",2);
 
     var link_legend=svg.append("g")
       .attr("class","nodesizeLegend")
-      .attr("transform","translate(0,80)");
+      .attr("transform","translate(0,130)");
     link_legend.append("text")
               .text(STATE.minVal_link)
               .attr("transform","translate(0,5)");

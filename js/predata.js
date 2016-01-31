@@ -1,7 +1,7 @@
 var STATE = {
     majorIDMap: null,
     majorList: [],
-    majorFill: d3.scale.category20(),
+    majorFill: d3.scale.category20b(),
     majorLegend: null,
     terms: ["HighestLevel2","T1_Level2", "T2_Level2", "T3_Level2"],
     scores: ["33-36", "28-32", "24-27", "20-23", "16-19", "1-15"],
@@ -10,10 +10,9 @@ var STATE = {
     // fitGradeIDMap: null,
     fits: ["T1_IMFIT", "T2_IMFIT", "T3_IMFIT"],
     // fitIDMap: null,
-    source: 0,
-    target: 1,
+    selectTerm:null,
+    selectMajor:null,
     clusters:null,
-    duration: 0,
     majorSankey: null,
     fitParset: null,
     clusterBubble:null
