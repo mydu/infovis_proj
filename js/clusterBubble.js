@@ -20,7 +20,7 @@ function ClusterBubble(){
     var clusterLegend=d3.select("#gender_legend").append("svg")
                         .attr("class","genderLegend")
                         // .attr("width", width)
-                        .attr("height", 50)
+                        .attr("height", 70)
 
     var actLegend=d3.select("#act_legend").append("svg")
                         // .attr("width",parseInt(d3.select("#act_legend").style("width"),10))
@@ -225,7 +225,7 @@ function ClusterBubble(){
              .data([5,36])
              .enter()
              .append("circle")
-             .attr("fill","#9C9C9C")
+             .attr("fill","#636363")
              .attr("r",function(d){return radius_scale(d)})
              .attr("transform",function(d,i){return "translate("+(i*distance+5)+",10)"})
     }
@@ -236,7 +236,7 @@ function ClusterBubble(){
                  .data(STATE.gender)
                  .enter()
                  .append("g")
-                 .attr("transform",function(d,i){return "translate(10,"+(i*20+20)+")"})
+                 .attr("transform",function(d,i){return "translate(10,"+(i*20+30)+")"})
 
       gender.append("circle")
                .attr("r",5)

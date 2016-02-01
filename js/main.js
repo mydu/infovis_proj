@@ -16,12 +16,12 @@ d3.csv("data/student_flow_aggregated_file.csv", function(error, data) {
 					   .style("text-anchor","middle");
 
 	STATE.paraGroup=svg.attr("width", 550)
-              .attr("height", 420)
+              .attr("height", 470)
               .append("g")
               .attr("class","parset")
-              .attr("transform", "rotate(-90)translate(-420,50)");
+              .attr("transform", "rotate(-90)translate(-470,50)");
     STATE.fitParset = d3.parsets()
-		    .width(400)
+		    .width(450)
 		    .height(480)
 		    .dimensions(STATE.fits)
 		    .value(function(d) {return d.count;})
