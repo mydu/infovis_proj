@@ -4,6 +4,8 @@
 <style>
 body{
   background-color: #f0f0f0 !important;
+  margin:20px !important;
+  font-family: Lato !important;
 }
 
 #story{
@@ -17,11 +19,6 @@ rect {
   cursor: pointer;
 }
 
-h1,p,text{
-
-  font-family: Lato;
-}
-
 .highlight{
   stroke: #000;
   shape-rendering: crispEdges;
@@ -33,9 +30,12 @@ h1,p,text{
   stroke-opacity: .2;
 }
 
-/*.link:hover {
-  stroke-opacity: .7;
-}*/
+div#footer
+{
+  font-family: 'Lato';
+  font-size: 10px;
+  color: #666666;
+}
 
 </style>
 <!-- Latest compiled and minified CSS -->
@@ -61,73 +61,85 @@ h1,p,text{
 <script src="js/majorSankey.js"></script>
 <script src="js/main.js"></script>
 <body>
+<div id="footer">DATA SOURCE: <a href="http://vacommunity.org/ieeevpg/viscontest/2015//index.html" target="_blank">IEEE VGTC VPG Data-Visualization Contest</a>
+  </div>
 <div id="title">
-  <h1>College Student Migration</h1>
+  <h1>College Students Migration</h1>
+  <p>The visualization shows how the major of interests changes and how the students be fit for the majors.</p>
+
+  <p>Data Encoding:<br>
+  1. Aggregation on major selection in three years (Major Migration)<br>
+  2. Aggregation on the interest level of the declared major in three years (Fit Migration)<br>
+  3. Clustering on gender and ACT score of individual students (Cluster Chart)
+  </p>
 </div>
 
-<div class="row" id="major">
-  
-  <div id="chart_title" class="col-md-9">
-    <h3>Major Migration Chart</h2>
-     <div class="btn-group" data-toggle="buttons">
-      <label class="majorbtn btn btn-default active" id="bySize">
-        <input type="radio" name="options"> By Size
-      </label>
-      <label class="majorbtn btn btn-default" id="byMajor">
-        <input type="radio" name="options">By Major
-      </label>
+    <div class="row" id="major">
+      
+      <div id="chart_title" class="col-md-9">
+        <h3>Major Migration</h2>
+        <p>How interest of major changes during three years?</p>
+         <div class="btn-group" data-toggle="buttons">
+          <label class="majorbtn btn btn-default active" id="bySize">
+            <input type="radio" name="options"> By Size
+          </label>
+          <label class="majorbtn btn btn-default" id="byMajor">
+            <input type="radio" name="options">By Major
+          </label>
+        </div>
+      </div>
+      <div id="majorSankey" class="col-md-6"></div>
+      <div id="legend" class="col-md-3">
+        <div id="size_legend"></div>
+        <div id="size_slider">
+          <p style="font-weight:bold;">Filter links greater than <input type="text" class="text-primary" id="amount" style="border:0; width:50px">
+          </p>
+          <div id="slider" style="width:160px; margin-left:10px;"></div>
+        
+        </div>
+        <div id="bestfit_legend"></div>
+        <div id="major_legend"></div>
+      </div>
+       <!-- <div id="story" class="col-md-3">
+         <p>Data Fact</p>
+       </div> -->
     </div>
-  </div>
-  <div id="majorSankey" class="col-md-6"></div>
-  <div id="legend" class="col-md-3">
-    <div id="size_legend"></div>
-    <div id="size_slider">
-      <p style="font-weight:bold;">Filter links greater than <input type="text" class="text-primary" id="amount" style="border:0; width:50px">
-      </p>
-      <div id="slider" style="width:160px; margin-left:10px;"></div>
-    
-    </div>
-    <div id="bestfit_legend"></div>
-    <div id="major_legend"></div>
-  </div>
-   <!-- <div id="story" class="col-md-3">
-     <p>Data Fact</p>
-   </div> -->
-</div>
-<div class="row" id="Demand">
-  <div id="fitParset" class="col-md-6">
-    <h3 >Fit Chart</h2>
-  </div>
-  <div id="clusterChart" class="col-md-6">
-     <h3>Cluster Chart</h2>
-      <div class="btn-group" data-toggle="buttons">
-      <label class="clusterbtn btn btn-default active" id="all">
-        <input type="radio" name="options"> Overview
-      </label>
-      <label class="clusterbtn btn btn-default" id="changeT2">
-        <input type="radio" name="options"> Migration in First Year (T1 to T2)
-      </label>
-      <label class="clusterbtn btn btn-default" id="changeT3">
-        <input type="radio" name="options"> Migration in Second Year (T2 to T3)
-      </label>
-    </div>    
-    <div id="cluster"></div>
-    <div id="cluster_legend">
-      <div id="gender_legend" class="col-md-2"></div>
-      <div id="actCtl" class="col-md-3">
-        <p>ACT Score</p>
-        <div id="act_legend"></div>
-        <div id="clusterSlider"></div>
+    <div class="row" id="Demand">
+      <div id="fitParset" class="col-md-6">
+        <h3>Major Fit Migration</h3>
+        <p>How the major fits students during three years?</p>
+      </div>
+      <div id="clusterChart" class="col-md-6">
+         <h3>Students Clustering</h2>
+          <p>Gender and ACT score distribution of students</p>
+          <div class="btn-group" data-toggle="buttons">
+          <label class="clusterbtn btn btn-default active" id="all">
+            <input type="radio" name="options"> Overview
+          </label>
+          <label class="clusterbtn btn btn-default" id="changeT2">
+            <input type="radio" name="options"> Migration in First Year
+          </label>
+          <label class="clusterbtn btn btn-default" id="changeT3">
+            <input type="radio" name="options"> Migration in Second Year
+          </label>
+        </div>    
+        <div id="cluster"></div>
+        <div id="cluster_legend">
+          <div id="gender_legend" class="col-md-2"></div>
+          <div id="actCtl" class="col-md-3">
+            <p>ACT Score</p>
+            <div id="act_legend"></div>
+            <div id="clusterSlider"></div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
- 
-</div>
-
+    
 <script>
 
 </script>
-
+<div id="footer">Visualization created by Mengying DU, Yuebai Xu</div>
+</div>
 </body>
 </html>
 
