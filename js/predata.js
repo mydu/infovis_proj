@@ -12,13 +12,15 @@ var STATE = {
     // fitGradeIDMap: null,
     fits: ["T1_IMFIT", "T2_IMFIT", "T3_IMFIT"],
     // fitIDMap: null,
+    gender:["Male","Female"],
     selectTerm:null,
     selectMajor:null,
     selectScore:20,
     clusters:null,
     majorSankey: null,
     fitParset: null,
-    clusterBubble:null
+    clusterBubble:null,
+    sortBy:"bySize"
 };
 
 function extendAttr(data){
@@ -93,6 +95,7 @@ function generateCluster(){
     var groupT2=STATE.cf.dimension(function(d){return d.changeT2;}).group().reduceSum(function(d){return d.count;}).top(Infinity);
     var groupT3=STATE.cf.dimension(function(d){return d.changeT3;}).group().reduceSum(function(d){return d.count;}).top(Infinity);
 
+   
     var total=_.reduce(_.pluck(groupT2,"value"),function(memo, num){ return memo + num; }, 0);
     
     var cluster =STATE.cf.dimension(function(d) {return d["Gender"]+"|"+STATE.scoreMap.get(d["scoreid"])+"|"+d["changeT2"]+"|"+d["changeT3"]})

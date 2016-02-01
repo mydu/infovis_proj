@@ -6,7 +6,7 @@ function MajorSankey(){
         bottom: 20,
         left: 110
     },
-    width = 600- margin.left - margin.right,
+    width = 600-margin.left - margin.right,
     height = 600- margin.top - margin.bottom;
 
     // append the svg canvas to the page
@@ -57,6 +57,11 @@ function MajorSankey(){
       // })
       .projection(function(d) { return [d.y, d.x]; });
 
+      $( ".majorbtn" ).click(function() {
+        $(this).addClass("active").siblings().removeClass("active");
+        STATE.sortBy=this.id;
+        STATE.majorSankey.update();
+      });
     this.update=function(){
 
       d3.select("#major").selectAll("g").remove();

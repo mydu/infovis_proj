@@ -1,58 +1,83 @@
 function ClusterBubble(){
 
     
-    var width = 500, height = 300;
+    var width = 500, height = 350;
         
     var padding = 1;
     
     var clusterPadding = 1;// separation between different-color circles
 
     var fill = d3.scale.ordinal()
-                 .domain(["Male","Female"])
+                 .domain(STATE.gender)
                  .range(["#1f77b4","#d62728"])
-
+    var radius_scale = d3.scale.sqrt();
 
     var svg = d3.select("#cluster").append("svg")
                 .attr("width", width)
                 .attr("height", height)
                 .attr("class","clusterBubble")
-  
 
-    var t2_centers = {
-        "0": {name:"T1=T2", x: 100, y: 200},
-        "1": {name:"T1!=T2", x: 300, y: 200},
-      }
-      var t3_centers={
-        "00": {name:"T1=T2=T3", x: 100, y: 200},
-        "01": {name:"T1=T2!=T3", x: 200, y: 200},
-        "10": {name:"T1!=T2=T3", x: 300, y: 200},
-        "11": {name:"T1!=T2!=T3", x: 400, y: 200}
-      }
+    var clusterLegend=d3.select("#gender_legend").append("svg")
+                        .attr("class","genderLegend")
+                        // .attr("width", width)
+                        .attr("height", 50)
 
-      var all_center = { "all": {name:"All", x: 200, y: 200}};
+    var actLegend=d3.select("#act_legend").append("svg")
+                        // .attr("width",parseInt(d3.select("#act_legend").style("width"),10))
+                        .attr("height", 20)
 
     var slider=d3.slider()
-                .scale(d3.scale.ordinal().domain(STATE.scoreID).rangePoints([0, 1], 0.5))
-                .axis( d3.svg.axis())
+                .scale(d3.scale.ordinal().domain(STATE.scoreID).rangePoints([0, 1]))
+                .axis(d3.svg.axis())
                 .snap(true)
                 .value(STATE.selectScore)
                 .on("slide",function(evt,val){
+                  STATE.selectScore=val;
                   STATE.clusterBubble.update();
                 })
-    d3.select("#clusterSlider")
+  d3.select("#clusterSlider")
             .call(slider);
-            
-    // .call(d3.slider().scale(d3.scale.linear().domain([1,5])).axis(d3.svg.axis()).snap(true).value(1));
-    // .call(d3.slider().scale(d3.scale.ordinal().domain(STATE.scores).rangePoints([0, 1], 0.5)).axis(d3.svg.axis()).snap(true).value(STATE.selectScore));  
+             // .call(d3.slider().scale(d3.scale.linear().domain([1,5])).axis(d3.svg.axis()).value(1));
+  
   this.update=function() {
+       d3.select(".clusterBubble").selectAll("*").remove();
 
-      d3.select(".clusterBubble").selectAll("*").remove();
+       
 
       STATE.clusterData=generateCluster();
       console.log(STATE.clusterData);
+
+
       var data=STATE.clusterData.data;
       var max_score = d3.max(data, function (d) { return d.score})
-      var radius_scale = d3.scale.sqrt();
+      
+      var all_center = { 
+        "all": {name: (!STATE.selectTerm) ? "All "+STATE.clusterData.Total+" Students": STATE.clusterData.Total+" Students who declared major in " +STATE.selectMajor+" at term "+ STATE.selectTerm, 
+                x: 200, 
+                y: 200}
+          };
+      
+      var t2_centers = {
+        "0": {
+              name: "T1=T2( "+_.where(STATE.clusterData.groupT2, {key:"0"})[0].value+" )",
+              x: 100,
+              y: 200},
+        "1": {
+        name:"T1!=T2( "+_.where(STATE.clusterData.groupT2, {key:"1"})[0].value+" )", 
+              x: 300,
+              y: 200},
+      }
+      var t3_centers={
+        "00": {name:"T1=T2=T3( "+_.where(STATE.clusterData.groupT3, {key:"00"})[0].value+" )", 
+              x: 100, y: 200},
+        "01": {name:"T1=T2!=T3( "+_.where(STATE.clusterData.groupT3, {key:"01"})[0].value+" )",  
+              x: 200, y: 200},
+        "10": {name:"T1!=T2=T3( "+_.where(STATE.clusterData.groupT3, {key:"10"})[0].value+" )", 
+               x: 300, y: 200},
+        "11": {name:"T1!=T2!=T3( "+_.where(STATE.clusterData.groupT3, {key:"11"})[0].value+" )",  
+                x: 400, y: 200}
+      }
+
       
       STATE.clusters = new Array(2);
 
@@ -69,7 +94,6 @@ function ClusterBubble(){
       // console.log(STATE.clusters)
       var maxRadius = d3.max(_.pluck(data, 'radius'));
 
-      
       var nodes = svg.selectAll("circle")
         .data(data);
 
@@ -99,11 +123,14 @@ function ClusterBubble(){
                     // .on("tick", tick)
                     // .start();
 
+      act_legend(actLegend);
+      cluster_legend(clusterLegend);
+
       draw('all');
-      $( ".btn" ).click(function() {
+      $( ".clusterbtn" ).click(function() {
         $(this).addClass("active").siblings().removeClass("active");
         draw(this.id);
-    });
+      });
 
     function draw (varname) {
       if (varname === "all") var foci=all_center;
@@ -133,12 +160,16 @@ function ClusterBubble(){
 
     function labels (foci) {
       svg.selectAll(".label").remove();
+
       svg.selectAll(".label")
       .data(_.toArray(foci)).enter().append("text")
       .attr("class", "label")
+      .style("text-anchor","middle")
       .text(function (d) { return d.name })
+      .attr("stoke","#3182bd")
       .attr("transform", function (d) {
-        return "translate(" + (d.x - ((d.name.length)*3)) + ", " + (d.y - 100) + ")";
+        // return "translate(" + (d.x - ((d.name.length)*3)) + ", " + (d.y - 120) + ")";
+         return "translate("+d.x+ ", " + (d.y - 120) + ")";
       });
     }
 
@@ -188,8 +219,34 @@ function ClusterBubble(){
     }
 
 }   
-
+    function act_legend(group){
+      var distance=parseInt(d3.select("#act_legend").style("width"))-10;
+      group.selectAll("circle")
+             .data([5,36])
+             .enter()
+             .append("circle")
+             .attr("fill","#9C9C9C")
+             .attr("r",function(d){return radius_scale(d)})
+             .attr("transform",function(d,i){return "translate("+(i*distance+5)+",10)"})
+    }
     
+    function cluster_legend(group){
+
+      var gender=group.selectAll("g")
+                 .data(STATE.gender)
+                 .enter()
+                 .append("g")
+                 .attr("transform",function(d,i){return "translate(10,"+(i*20+20)+")"})
+
+      gender.append("circle")
+               .attr("r",5)
+               .attr("fill",function(d){return fill(d);})
+
+      gender.append("text")
+             .text(function(d){return d;})
+             .attr("x",10)
+             .attr("y",5)
+    }
     function removePopovers () {
       $('.popover').each(function() {
         $(this).remove();

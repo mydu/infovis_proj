@@ -5,6 +5,7 @@
 body{
   background-color: #f0f0f0 !important;
 }
+
 #story{
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -17,11 +18,13 @@ rect {
 }
 
 h1,p,text{
+
   font-family: Lato;
 }
 
 .highlight{
   stroke: #000;
+  shape-rendering: crispEdges;
 }
 
 .parsets.tooltip { opacity: 1; }
@@ -66,6 +69,14 @@ h1,p,text{
   
   <div id="chart_title" class="col-md-9">
     <h3>Major Migration Chart</h2>
+     <div class="btn-group" data-toggle="buttons">
+      <label class="majorbtn btn btn-default active" id="bySize">
+        <input type="radio" name="options"> By Size
+      </label>
+      <label class="majorbtn btn btn-default" id="byMajor">
+        <input type="radio" name="options">By Major
+      </label>
+    </div>
   </div>
   <div id="majorSankey" class="col-md-6"></div>
   <div id="legend" class="col-md-3">
@@ -87,22 +98,30 @@ h1,p,text{
   <div id="fitParset" class="col-md-6">
     <h3 >Fit Chart</h2>
   </div>
-  <div class="col-md-6">
+  <div id="clusterChart" class="col-md-6">
      <h3>Cluster Chart</h2>
       <div class="btn-group" data-toggle="buttons">
-      <label class="btn btn-default active" id="all">
+      <label class="clusterbtn btn btn-default active" id="all">
         <input type="radio" name="options"> T1
       </label>
-      <label class="btn btn-default" id="changeT2">
+      <label class="clusterbtn btn btn-default" id="changeT2">
         <input type="radio" name="options"> T2
       </label>
-      <label class="btn btn-default" id="changeT3">
+      <label class="clusterbtn btn btn-default" id="changeT3">
         <input type="radio" name="options"> T3
       </label>
     </div>    
     <div id="cluster"></div>
-    <div id="clusterSlider" class="col-md-3"></div>
+    <div id="cluster_legend">
+      <div id="gender_legend" class="col-md-2"></div>
+      <div id="actCtl" class="col-md-3">
+        <p>ACT Score</p>
+        <div id="act_legend"></div>
+        <div id="clusterSlider"></div>
+      </div>
+    </div>
   </div>
+ 
 </div>
 
 <script>
