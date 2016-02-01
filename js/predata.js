@@ -102,7 +102,7 @@ function generateCluster(){
                          .group().reduceSum(function(d){return d.count;}).top(Infinity);
     console.log(cluster);
 
-    var min=d3.min(_.pluck(cluster,"value").filter(function(num){return num>10;}));
+    var min=d3.min(_.pluck(cluster,"value").filter(function(num){return num>30;}));
     // console.log(min);
     var sampleData=[];
 
