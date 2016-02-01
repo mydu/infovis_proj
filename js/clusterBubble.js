@@ -1,7 +1,7 @@
 function ClusterBubble(){
 
     
-    var width = 500, height = 500;
+    var width = 500, height = 300;
         
     var padding = 1;
     
@@ -15,28 +15,41 @@ function ClusterBubble(){
     var svg = d3.select("#cluster").append("svg")
                 .attr("width", width)
                 .attr("height", height)
-                .attr("class","clusterBubble");
+                .attr("class","clusterBubble")
+  
 
     var t2_centers = {
-        "0": {name:"0", x: 100, y: 200},
-        "1": {name:"1", x: 300, y: 200},
+        "0": {name:"T1=T2", x: 100, y: 200},
+        "1": {name:"T1!=T2", x: 300, y: 200},
       }
       var t3_centers={
-        "00": {name:"00", x: 100, y: 200},
-        "01": {name:"01", x: 200, y: 200},
-        "10": {name:"10", x: 300, y: 200},
-        "11": {name:"11", x: 400, y: 200}
+        "00": {name:"T1=T2=T3", x: 100, y: 200},
+        "01": {name:"T1=T2!=T3", x: 200, y: 200},
+        "10": {name:"T1!=T2=T3", x: 300, y: 200},
+        "11": {name:"T1!=T2!=T3", x: 400, y: 200}
       }
 
       var all_center = { "all": {name:"All", x: 200, y: 200}};
 
-      
+    var slider=d3.slider()
+                .scale(d3.scale.ordinal().domain(STATE.scoreID).rangePoints([0, 1], 0.5))
+                .axis( d3.svg.axis())
+                .snap(true)
+                .value(STATE.selectScore)
+                .on("slide",function(evt,val){
+                  STATE.clusterBubble.update();
+                })
+    d3.select("#clusterSlider")
+            .call(slider);
+            
+    // .call(d3.slider().scale(d3.scale.linear().domain([1,5])).axis(d3.svg.axis()).snap(true).value(1));
+    // .call(d3.slider().scale(d3.scale.ordinal().domain(STATE.scores).rangePoints([0, 1], 0.5)).axis(d3.svg.axis()).snap(true).value(STATE.selectScore));  
   this.update=function() {
 
       d3.select(".clusterBubble").selectAll("*").remove();
 
       STATE.clusterData=generateCluster();
-      // console.log(STATE.clusterData);
+      console.log(STATE.clusterData);
       var data=STATE.clusterData.data;
       var max_score = d3.max(data, function (d) { return d.score})
       var radius_scale = d3.scale.sqrt();

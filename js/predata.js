@@ -4,14 +4,17 @@ var STATE = {
     majorFill: d3.scale.category20b(),
     majorLegend: null,
     terms: ["HighestLevel2","T1_Level2", "T2_Level2", "T3_Level2"],
-    scores: ["33-36", "28-32", "24-27", "20-23", "16-19", "1-15"],
+    scores: ["1-15","16-19","20-23","24-27","28-32","33-36"],
+    scoreID: [1,16,20,24,28,33],
     scoreIDMap: null,
+    scoreMap:null,
     fitGrades: ["Poor", "Moderate", "Good"],
     // fitGradeIDMap: null,
     fits: ["T1_IMFIT", "T2_IMFIT", "T3_IMFIT"],
     // fitIDMap: null,
     selectTerm:null,
     selectMajor:null,
+    selectScore:20,
     clusters:null,
     majorSankey: null,
     fitParset: null,
@@ -21,6 +24,7 @@ var STATE = {
 function extendAttr(data){
     STATE.majorList=_.uniq(_.pluck(data,"T1_Level2"))
     STATE.majorIDMap=_.object(STATE.majorList,_.range(STATE.majorList.length))
+    STATE.scoreIDMap=_.object(STATE.scores,STATE.scoreID)
 
     _.each(data,function(d){
         d.fits = "";
@@ -33,6 +37,7 @@ function extendAttr(data){
             d.fits += fitTextToInt(d[i]);
         });
         d.count=parseInt(d.count);
+        d.scoreid=STATE.scoreIDMap[d.actcat];
 
         if(d["T1_Level2"]===d["T2_Level2"]) d.changeT2="0";
         if(d["T1_Level2"]!==d["T2_Level2"]) d.changeT2="1";
@@ -53,6 +58,7 @@ function extendAttr(data){
                 return 2;
         }
     } 
+    // console.log(data);
 }
 
 function aggAttr(data) {
@@ -70,27 +76,28 @@ function aggAttr(data) {
 
     STATE.T23=STATE.cf.dimension(function(d){return "T2"+d["T2_Level2_id"]+"|"+"T3"+d["T3_Level2_id"];})
             .group().reduceSum(function(d){return d.count;}).top(Infinity);
-    
-    //data for cluster
-    STATE.scoreIDMap=d3.map();
-        for(var i in STATE.scores) {
-            if (_.contains(["16-19", "1-15","20-23"],STATE.scores[i])) STATE.scoreIDMap.set(STATE.scores[i], 5);
-            if (_.contains(["24-27", "33-36", "28-32"],STATE.scores[i])) STATE.scoreIDMap.set(STATE.scores[i], 36);
-            // if (_.contains([],STATE.scores[i])) STATE.scoreIDMap.set(STATE.scores[i], 32);
-    }
-
 }
 
 function generateCluster(){
 
+    var cluster1=_.filter(STATE.scoreID,function(d){ return d<=STATE.selectScore});
+    var cluster2=_.filter(STATE.scoreID,function(d){ return d>STATE.selectScore});
+
+    //data for cluster
+    STATE.scoreMap=d3.map();
+        for(var i in STATE.scoreID) {
+            if (_.contains(cluster1,STATE.scoreID[i])) STATE.scoreMap.set(STATE.scoreID[i], 5);
+            if (_.contains(cluster2,STATE.scoreID[i])) STATE.scoreMap.set(STATE.scoreID[i], 36);
+            // if (_.contains([],STATE.scores[i])) STATE.scoreIDMap.set(STATE.scores[i], 32);
+    }
     var groupT2=STATE.cf.dimension(function(d){return d.changeT2;}).group().reduceSum(function(d){return d.count;}).top(Infinity);
     var groupT3=STATE.cf.dimension(function(d){return d.changeT3;}).group().reduceSum(function(d){return d.count;}).top(Infinity);
 
     var total=_.reduce(_.pluck(groupT2,"value"),function(memo, num){ return memo + num; }, 0);
     
-    var cluster =STATE.cf.dimension(function(d) {return d["Gender"]+"|"+STATE.scoreIDMap.get(d["actcat"])+"|"+d["changeT2"]+"|"+d["changeT3"]})
+    var cluster =STATE.cf.dimension(function(d) {return d["Gender"]+"|"+STATE.scoreMap.get(d["scoreid"])+"|"+d["changeT2"]+"|"+d["changeT3"]})
                          .group().reduceSum(function(d){return d.count;}).top(Infinity);
-    // console.log(cluster);
+    console.log(cluster);
 
     var min=d3.min(_.pluck(cluster,"value").filter(function(num){return num>10;}));
     // console.log(min);

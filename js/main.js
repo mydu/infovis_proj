@@ -35,7 +35,7 @@ function updateParsets() {
     STATE.paraGroup.datum(STATE.cf["fits"].bottom(Infinity)).call(STATE.fitParset);
     STATE.paratitle.text(function(){
 							if (STATE.selectTerm){
-								return "Students Choose Major in " +STATE.selectMajor+" at Term "+ STATE.selectTerm;
+								return "Students who declared major in " +STATE.selectMajor+" at term "+ STATE.selectTerm;
 							}
 							else return "All Students"
 						})

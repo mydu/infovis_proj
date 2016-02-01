@@ -35,8 +35,9 @@ function MajorSankey(){
     var size_legend=d3.select("#size_legend")
                     .append("svg")
                     // .append("g")
-
-
+    var bestfit_legend=d3.select("#bestfit_legend")
+                    .append("svg")
+                    .attr("height",40)           
     // Set the sankey diagram properties
     var sankey = d3.sankey()
       .nodeWidth(10)
@@ -61,7 +62,7 @@ function MajorSankey(){
       d3.select("#major").selectAll("g").remove();
 
         //set up graph in same style as original example but empty
-      console.log([STATE.T12,STATE.T23]);
+
       var graph = {"nodes" : [], "links" : []};
 
         _.each([STATE.T12,STATE.T23],function(data){
@@ -119,6 +120,13 @@ function MajorSankey(){
                       .domain([STATE.minVal_link,STATE.maxVal_link])
                       .range([1,10]);
 
+      majorLegend(major_legend);
+      sizeLegend(size_legend);
+
+      if(STATE.selectTerm) {
+        bestfitLegend(bestfit_legend)
+      }else{d3.select("#bestfit_legend").select("svg").selectAll("*").remove();}
+
 
       $("#slider").slider({
           value:1,
@@ -131,7 +139,10 @@ function MajorSankey(){
             updateLinks();
           }
         });
-       $("#amount").val($("#slider").slider("value"));
+       $("#amount").change(function(){
+          $("#slider").slider( "value",$("#amount").val());
+          updateLinks();
+       }).val($("#slider").slider("value"));
 
       var sankey_g=svg.append("g").attr("transform","translate(" + margin.left + "," + margin.top + ")");
       sankey_g.selectAll(".term")
@@ -158,7 +169,7 @@ function MajorSankey(){
                   d3.select(this).append("tspan")
                                 .attr("dy",15)
                                 .attr("x",i*200)
-                                .text("Highest Interested Major")
+                                .text("(Best-fit Major)")
                                 .style("text-anchor", "middle")
                 }
               });
@@ -205,7 +216,7 @@ function MajorSankey(){
               var sourceid=d.source.name.substring(2,d.source.name.length)
               var targetid=d.target.name.substring(2,d.target.name.length)
               // return  (_.invert(STATE.majorIDMap))[sourceid]+ " → " +(_.invert(STATE.majorIDMap))[targetid] + "\n" + d.value;
-              return d.value+" students from "+(_.invert(STATE.majorIDMap))[sourceid]+"("+sourceterm+") to "+(_.invert(STATE.majorIDMap))[targetid]+"("+targetterm+")";
+              return d.value+" Students migrate\n"+(_.invert(STATE.majorIDMap))[sourceid]+"("+sourceterm+") → "+(_.invert(STATE.majorIDMap))[targetid]+"("+targetterm+")";
           });
 
       // add in the nodes
@@ -240,34 +251,35 @@ function MajorSankey(){
           .on("click",function(d,i){
            // var interact_mode="click";
            // highlight_node_links(d,i,this,interact_mode);
+           if(!STATE.selectTerm) {
+              clearFilter();
+               var term=d.name.substring(0,2);
+               var majorid=d.name.substring(2,d.name.length);
+               STATE.selectTerm=term;
+               STATE.selectMajorid=majorid;
+               STATE.selectMajor=_.invert(STATE.majorIDMap)[majorid];
 
-           clearFilter();
-           var term=d.name.substring(0,2);
-           var majorid=d.name.substring(2,d.name.length);
-           STATE.selectTerm=term;
-           STATE.selectMajorid=majorid;
-           STATE.selectMajor=_.invert(STATE.majorIDMap)[majorid];
+               if (term==="T1"){
+                  STATE.T12=STATE.cf.dimension(function(d){return "T1"+d["HighestLevel2_id"]+"|"+"T2"+d["T2_Level2_id"];})
+                        .group().reduceSum(function(d){return d.count;}).top(Infinity);
+               }
+               if(term==="T2"){
+                  STATE.T12=STATE.cf.dimension(function(d){return "T1"+d["T1_Level2_id"]+"|"+"T2"+d["HighestLevel2_id"];})
+                        .group().reduceSum(function(d){return d.count;}).top(Infinity);
 
-           if (term==="T1"){
-              STATE.T12=STATE.cf.dimension(function(d){return "T1"+d["HighestLevel2_id"]+"|"+"T2"+d["T2_Level2_id"];})
-                    .group().reduceSum(function(d){return d.count;}).top(Infinity);
-           }
-           if(term==="T2"){
-              STATE.T12=STATE.cf.dimension(function(d){return "T1"+d["T1_Level2_id"]+"|"+"T2"+d["HighestLevel2_id"];})
-                    .group().reduceSum(function(d){return d.count;}).top(Infinity);
-
-              STATE.T23=STATE.cf.dimension(function(d){return "T2"+d["HighestLevel2_id"]+"|"+"T3"+d["T3_Level2_id"];})
-              .group().reduceSum(function(d){return d.count;}).top(Infinity);
-           }
-           if (term==="T3"){
-              STATE.T23=STATE.cf.dimension(function(d){return "T2"+d["T2_Level2_id"]+"|"+"T3"+d["HighestLevel2_id"];})
-              .group().reduceSum(function(d){return d.count;}).top(Infinity);
-           }
-          
-           STATE.cf[term+"_Level2_id"].filterExact(majorid);
-           STATE.clusterBubble.update();
-           STATE.majorSankey.update();
-           updateParsets();
+                  STATE.T23=STATE.cf.dimension(function(d){return "T2"+d["HighestLevel2_id"]+"|"+"T3"+d["T3_Level2_id"];})
+                  .group().reduceSum(function(d){return d.count;}).top(Infinity);
+               }
+               if (term==="T3"){
+                  STATE.T23=STATE.cf.dimension(function(d){return "T2"+d["T2_Level2_id"]+"|"+"T3"+d["HighestLevel2_id"];})
+                  .group().reduceSum(function(d){return d.count;}).top(Infinity);
+               }
+              
+               STATE.cf[term+"_Level2_id"].filterExact(majorid);
+               STATE.clusterBubble.update();
+               STATE.majorSankey.update();
+               updateParsets();
+           } 
           })
     
           // .call(d3.behavior.drag()
@@ -324,10 +336,11 @@ function MajorSankey(){
             var term=d.name.substring(0,2);
             var majorid=d.name.substring(2,d.name.length)
             if (term===STATE.selectTerm) {
-              return d.value+" students whose highest interest major is "+(_.invert(STATE.majorIDMap))[majorid]
-                      +" choose major "+(_.invert(STATE.majorIDMap))[STATE.selectMajorid]+" at term "+STATE.selectTerm;
+              return d.value+" Students in \n"
+                     +(_.invert(STATE.majorIDMap))[STATE.selectMajorid]+"("+STATE.selectTerm+")\n"
+                     +(_.invert(STATE.majorIDMap))[majorid]+"(Best-fit Major)";
             }
-            else return d.value+" students choose "+(_.invert(STATE.majorIDMap))[majorid]+" at Term "+term; 
+            else return d.value+" Students in\n"+(_.invert(STATE.majorIDMap))[majorid]+"("+term+")"; 
           });
             // return (_.invert(STATE.majorIDMap))[majorid] + "\n" + d.value; });
             
@@ -337,9 +350,6 @@ function MajorSankey(){
           // .text(function (d) { return d.value})
           .attr("font-size", 12)
           .style("text-anchor", "middle")
-
-      majorLegend(major_legend);
-      sizeLegend(size_legend);
 
       function updateLinks(){
         d3.select(".links").selectAll(".link")
@@ -447,8 +457,8 @@ function MajorSankey(){
 
 
   function majorLegend(svg) {
-    var itemHeight = 14;
-    var padding = 4;
+    var itemHeight = 12;
+    var padding = 3;
     var majorData=[];
     //map STATE.majorIDMap
 
@@ -459,7 +469,7 @@ function MajorSankey(){
         name:value
       })
     })
-    svg.attr("height",400);
+    svg.attr("height",360);
     svg.append("text").text('Majors')
         .attr("transform","translate(0,20)");
     var item = svg.append("g")
@@ -509,6 +519,23 @@ function MajorSankey(){
         .attr("fill", "black")
         .text(function(d) {
           return d.name;});
+  }
+  function bestfitLegend(svg){
+    svg.append("text")
+       .attr("transform","translate(60,20)")
+       .text("Stoke enodes declared major")
+    svg.append("text")
+       .attr("transform","translate(60,40)")
+       .text("Fill enodes best-fit major")
+    svg.append("rect")
+       .attr("transform","translate(5,15)")
+       .attr("height",10)
+       .attr("width",50)
+       .attr("stroke",STATE.majorFill(STATE.selectMajorid))
+       .attr("stroke-width",3)
+       .attr("fill","#9C9C9C")
+       .style("opacity",0)
+       .transition().duration(1000).style("opacity","1");
   }
   function sizeLegend(svg) {
     var all_nodevalues=STATE.graph.nodes
