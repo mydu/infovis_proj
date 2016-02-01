@@ -14,7 +14,7 @@ Contest Challenge: Perceived vs. Actual Student Interest
 <http://vacommunity.org/ieeevpg/viscontest/2015/>
 
 Data Structure
-![](data/attributes.png)
+![](data/Attributes.png)
 <http://vacommunity.org/ieeevpg/viscontest/2015//student_flow_aggregated_field_descriptions.pdf#page=3>
 
 ###Interaction
