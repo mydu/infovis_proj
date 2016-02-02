@@ -5,9 +5,10 @@ var STATE = {
     majorLegend: null,
     terms: ["HighestLevel2","T1_Level2", "T2_Level2", "T3_Level2"],
     scores: ["1-15","16-19","20-23","24-27","28-32","33-36"],
-    scoreID: [1,16,20,24,28,33],
+    scoreID: [15,19,23,27,32,36],
     scoreIDMap: null,
     scoreMap:null,
+    scoreMap_i:null,
     fitGrades: ["Poor", "Moderate", "Good"],
     // fitGradeIDMap: null,
     fits: ["T1_IMFIT", "T2_IMFIT", "T3_IMFIT"],
@@ -15,7 +16,7 @@ var STATE = {
     gender:["Male","Female"],
     selectTerm:null,
     selectMajor:null,
-    selectScore:20,
+    selectScore:23,
     clusters:null,
     majorSankey: null,
     fitParset: null,
@@ -84,40 +85,55 @@ function generateCluster(){
 
     var cluster1=_.filter(STATE.scoreID,function(d){ return d<=STATE.selectScore});
     var cluster2=_.filter(STATE.scoreID,function(d){ return d>STATE.selectScore});
+    var interval1="1-"+cluster1[cluster1.length-1];
+    var interval2=(cluster1[cluster1.length-1]+1)+"-"+cluster2[cluster2.length-1];
+
+    STATE.scoreMap_i=_.invert(_.object([interval1,interval2],[5,36]));
 
     //data for cluster
     STATE.scoreMap=d3.map();
-        for(var i in STATE.scoreID) {
-            if (_.contains(cluster1,STATE.scoreID[i])) STATE.scoreMap.set(STATE.scoreID[i], 5);
+    for(var i in STATE.scoreID) {
+            // if (_.contains(cluster1,STATE.scoreID[i])) STATE.scoreMap[STATE.scoreID[i]]=5;
+            // if (_.contains(cluster2,STATE.scoreID[i])) STATE.scoreMap[STATE.scoreID[i]]=36;
+            if (_.contains(cluster1,STATE.scoreID[i])) {
+                STATE.scoreMap.set(STATE.scoreID[i], 5);
+            }
             if (_.contains(cluster2,STATE.scoreID[i])) STATE.scoreMap.set(STATE.scoreID[i], 36);
-            // if (_.contains([],STATE.scores[i])) STATE.scoreIDMap.set(STATE.scores[i], 32);
+            
     }
+
     var groupT2=STATE.cf.dimension(function(d){return d.changeT2;}).group().reduceSum(function(d){return d.count;}).top(Infinity);
     var groupT3=STATE.cf.dimension(function(d){return d.changeT3;}).group().reduceSum(function(d){return d.count;}).top(Infinity);
 
    
     var total=_.reduce(_.pluck(groupT2,"value"),function(memo, num){ return memo + num; }, 0);
     
-    var cluster =STATE.cf.dimension(function(d) {return d["Gender"]+"|"+STATE.scoreMap.get(d["scoreid"])+"|"+d["changeT2"]+"|"+d["changeT3"]})
+    var cluster =STATE.cf.dimension(function(d) {return d["Gender"]+"|"+STATE.scoreMap.get(d.scoreid)+"|"+d["changeT2"]+"|"+d["changeT3"]})
                          .group().reduceSum(function(d){return d.count;}).top(Infinity);
-    console.log(cluster);
+    // console.log(cluster);
 
-    var min=d3.min(_.pluck(cluster,"value").filter(function(num){return num>30;}));
-    // console.log(min);
+    var min=d3.min(_.pluck(cluster,"value"));
+    var max=d3.max(_.pluck(cluster,"value"));
+    // console.log([min,max])
+    // var norm=d3.min(_.pluck(cluster,"value").filter(function(num){return num>100;}));
+    var norm=min>(max/20) ? min : (max/20);
+    // var norm=max/10;
     var sampleData=[];
 
     cluster.forEach(function(d){
-      var scalor=Math.floor(d.value/min);
+      if(d.value>0){
+        var scalor=Math.floor(d.value/norm);
 
-      d3.range(scalor).forEach(function(){
-        var item={
-          gender: d.key.split("|")[0],
-          score:  d.key.split("|")[1],
-          changeT2:  d.key.split("|")[2],
-          changeT3:  d.key.split("|")[3]
-        }
-        sampleData.push(item);
-      })
+        d3.range(scalor).forEach(function(){
+            var item={
+              gender: d.key.split("|")[0],
+              score:  d.key.split("|")[1],
+              changeT2:  d.key.split("|")[2],
+              changeT3:  d.key.split("|")[3]
+            }
+            sampleData.push(item);
+        })
+      }  
     });
 
     return { Total:total,

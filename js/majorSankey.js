@@ -487,7 +487,7 @@ function MajorSankey(){
                 })
                 .on("mouseover",function(d){
                      var highlight_majorid=d.id;
-                     d3.select(this).selectAll("rect").classed("highlight",true);
+                     d3.select(this).selectAll("rect,text").classed("highlight",true);
                      var highlight_nodes=d3.select(".sankey").selectAll(".node")
                       .filter(function(d){
                         var majorid=d.name.substring(2,d.name.length);
@@ -497,7 +497,7 @@ function MajorSankey(){
                       highlight_nodes.selectAll("text").text(function(d){return d.value;})
                   })
                   .on("mouseout",function(d){
-                    d3.select(this).selectAll("rect").classed("highlight",false);
+                    d3.select(this).selectAll("rect,text").classed("highlight",false);
                     d3.select(".sankey").selectAll(".node").selectAll("rect").classed("highlight",false);
                     
                     var highlight_majorid=d.id;
@@ -521,6 +521,7 @@ function MajorSankey(){
         .attr("y", itemHeight-2)
         .attr("text-anchor", "start")
         .attr("font-size", itemHeight + "px")
+        .attr("cursor","pointer")
         .attr("fill", "black")
         .text(function(d) {
           return d.name;});

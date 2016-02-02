@@ -42,10 +42,8 @@ function ClusterBubble(){
   this.update=function() {
        d3.select(".clusterBubble").selectAll("*").remove();
 
-       
 
       STATE.clusterData=generateCluster();
-      console.log(STATE.clusterData);
 
 
       var data=STATE.clusterData.data;
@@ -104,8 +102,8 @@ function ClusterBubble(){
         .attr("r", 1)
         // .style("fill","#1f77b4")
         .style("fill", function (d) { return fill(d.gender); })
-        // .on("mouseover", function (d) { showPopover.call(this, d); })
-        // .on("mouseout", function (d) { removePopovers(); })
+        .on("mouseover", function (d) { showPopover.call(this, d); })
+        .on("mouseout", function (d) { removePopovers(); })
 
       nodes.transition().duration(500)
         .attr("r", function (d) { return d.radius; })
@@ -260,7 +258,8 @@ function ClusterBubble(){
         trigger: 'manual',
         html : true,
         content: function() { 
-          return d.changeT2+"<br/>"+d.changeT3+"<br/>"+d.score }
+          return "Gender: "+d.gender+"<br/>"+"Act Score: "+STATE.scoreMap_i[d.score];
+        }
       });
       $(this).popover('show')
     }
