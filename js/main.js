@@ -29,6 +29,9 @@ d3.csv("data/student_flow_aggregated_file.csv", function(error, data) {
 		    .dimensionFormat(gradeFormat)
 		    .tension(0.5);
 	updateParsets();
+
+	$("#content").css("opacity",1);
+	$("#wait").css("display","none")
 });
 
 function updateParsets() {

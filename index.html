@@ -8,6 +8,10 @@ body{
   font-family: Lato !important;
 }
 
+ #content{
+    opacity: 0;
+  }
+
 #story{
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -36,6 +40,18 @@ div#footer
   color: #666666;
 }
 
+div.tips{
+ color:#3182bd; 
+}
+ #majortips{
+    display:none;
+    border: 3px solid #ddd;
+    border-radius: 10px;
+  }
+  #checkmajortips{
+    cursor:pointer;
+  }
+
 </style>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> 
@@ -53,32 +69,43 @@ div#footer
 <script src="lib/sankey.js"></script>
 <script src="lib/d3.parsets.js"></script>
 <script src="lib/d3.slider.js"></script>
-<script src="lib/d3-legend.min.js"></script>
 
 <script src="js/predata.js"></script>
 <script src="js/clusterBubble.js"></script>
 <script src="js/majorSankey.js"></script>
 <script src="js/main.js"></script>
 <body>
-<div id="footer">DATA SOURCE: <a href="http://vacommunity.org/ieeevpg/viscontest/2015//index.html" target="_blank">IEEE VGTC VPG Data-Visualization Contest</a>
+
+<div id="wait">Please wait for loading data...</div>
+
+<div id="content">
+  <div id="footer">DATA SOURCE: <a href="http://vacommunity.org/ieeevpg/viscontest/2015//index.html" target="_blank">IEEE VGTC VPG Data-Visualization Contest</a>
   </div>
 <div id="title">
   <h1>College Students Migration</h1>
   <p>The visualization shows how the major of interests changes and how the students be fit for the majors.</p>
 
   <p>Data Encoding:<br>
-  1. Aggregation on major selection in three years (Major Migration)<br>
-  2. Aggregation on the interest level of the declared major in three years (Fit Migration)<br>
-  3. Clustering on gender and ACT score of individual students (Cluster Chart)
+  1. Aggregation the number on different major selection through three years (Major Migration Chart)<br>
+  2. Aggregation on the interest level of the declared major in three years (Fit Migration Chart)<br>
+  3. Clustering on gender and ACT score of individual student (Cluster Chart)
   </p>
 </div>
 
-    <div class="row" id="major">
+<div class="row" id="major">
       
-      <div id="chart_title" class="col-md-9">
+      <div id="chart_title" class="col-md-12">
         <h3>Major Migration</h2>
         <p>How interest of major changes during three years?</p>
-         <div class="btn-group" data-toggle="buttons">
+            <div class='tips col-md-6'>
+              <span class="glyphicon glyphicon-plus text-right" id="checkmajortips">Tips</span><br/>
+              <div id="majortips">
+                <span>1. Hover the node to check the number of certain declared major in certain year, also the number of flow-in and flow-out number of different majors from the previous year & to the following year</span><br/>
+                <span>2. Click on the node to see the details of selected group of students with a best fit major distribution. Just clicking on the blank canvas to clear the filter</span><br/>
+                <span>3. Hover on the legend to check number of students rankings through three years</span><br/>
+            </div>
+          </div>
+          <div class="btn-group col-md-6 pull-right" data-toggle="buttons">
           <label class="majorbtn btn btn-default active" id="bySize">
             <input type="radio" name="options"> By Size
           </label>
@@ -133,11 +160,20 @@ div#footer
         </div>
       </div>
     </div>
-    
-<script>
+    <div id="footer"><p class="text-right">Visualization created by Mengying DU, Yuebai Xu</p></div>
+</div>
 
+
+
+<script>
+ $("#checkmajortips").click(function(){
+    if($("#majortips").css("display") == "none"){
+      $("#majortips").css("display","block");
+    }else if($("#majortips").css("display") == "block"){
+      $("#majortips").css("display","none");
+    }
+  });
 </script>
-<div id="footer"><p class="text-right">Visualization created by Mengying DU, Yuebai Xu</p></div>
 </div>
 </body>
 </html>

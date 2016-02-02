@@ -25,7 +25,7 @@ It consists of three charts:
 
 1. Hover the node(rectangle) to check the number of certain declared major in certain year, also the number of flow-in and flow-out from different majors in previous year and following year.
 
-2. Click on the rectangle to see the detailed selected group student with a best fit major distribution(figure below). If you want to go back, just clicking on the blank canvas in the graph
+2. Click on the rectangle to see the details of selected group of students with a best fit major distribution(figure below). If you want to go back, just clicking on the blank canvas in the graph
 
 3. The **Fit Chart** and **Cluster Chart** will be updated dynamically as filtering the selection in **Major Migration Chart**.
 
