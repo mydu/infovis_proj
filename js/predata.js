@@ -146,9 +146,11 @@ function generateCluster(){
 }
 function clearFilter(){
 
-      STATE.cf["T1_Level2_id"].filterAll();
-      STATE.cf["T2_Level2_id"].filterAll();
-      STATE.cf["T3_Level2_id"].filterAll();
+      STATE.cf["T1_Level2_id"].filter(null);
+      STATE.cf["T2_Level2_id"].filter(null);
+      STATE.cf["T3_Level2_id"].filter(null);
+      STATE.cf["HighestLevel2_id"].filter(null);
+      aggAttr(STATE.data);
  }
 function gradeFormat(d) {
     var a = d.charAt(1);

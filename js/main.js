@@ -1,5 +1,7 @@
 d3.csv("data/student_flow_aggregated_file.csv", function(error, data) {
 
+	STATE.data=data;
+	
 	extendAttr(data);
 	aggAttr(data);
 	
