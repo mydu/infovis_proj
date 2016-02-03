@@ -1,14 +1,15 @@
 ##Infovis Project - College Students Migration
 
 ###Data Source
-Contest Challenge: Perceived vs. Actual Student Interest
-<http://vacommunity.org/ieeevpg/viscontest/2015/>
+[IEEE VGTC VPG Contest](<http://vacommunity.org/ieeevpg/viscontest/2015/>)- Perceived vs. Actual Student Interest
 
-Data Attributes
+###Data Attributes
+[Description](<http://vacommunity.org/ieeevpg/viscontest/2015//student_flow_aggregated_field_descriptions.pdf#page=3>)
 ![](data/Attributes.png)
-<http://vacommunity.org/ieeevpg/viscontest/2015//student_flow_aggregated_field_descriptions.pdf#page=3>
+
 
 ###Entire Layout
+#####[Try Demo Here](http://mydu.xyz/demos/majorFlow/)
 ![](figure/entire.png)
 
 ###Description
