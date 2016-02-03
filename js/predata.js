@@ -82,6 +82,7 @@ function aggAttr(data) {
 }
 
 function generateCluster(){
+    $("#all").addClass("active").siblings().removeClass("active");
 
     var cluster1=_.filter(STATE.scoreID,function(d){ return d<=STATE.selectScore});
     var cluster2=_.filter(STATE.scoreID,function(d){ return d>STATE.selectScore});
