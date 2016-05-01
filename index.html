@@ -36,12 +36,11 @@ rect {
 
 div#footer
 {
-  font-family: 'Lato';
   color: #666666;
 }
 
 div.tips{
- color:#3182bd; 
+ color:#3182bd;
 }
  #majortips{
     display:none;
@@ -52,18 +51,39 @@ div.tips{
     cursor:pointer;
   }
 
+  /* latin-ext */
+  @font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Lato Regular'), local('Lato-Regular'), url(http://fonts.gstatic.com/s/lato/v11/8qcEw_nrk_5HEcCpYdJu8BTbgVql8nDJpwnrE27mub0.woff2) format('woff2');
+    unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+  }
+  /* latin */
+  @font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Lato Regular'), local('Lato-Regular'), url(http://fonts.gstatic.com/s/lato/v11/MDadn8DQ_3oT6kvnUq_2r_esZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+  }
 </style>
 <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> 
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">  -->
 <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<!-- <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"> -->
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
 <link rel="stylesheet" type="text/css" href="css/d3.parsets.css">
 <link rel="stylesheet" type="text/css" href="css/d3.slider.css">
-<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<!-- <script src="lib/d3.min.js"></script> -->
+<!-- <script src="http://code.jquery.com/jquery-1.10.2.js"></script> -->
+<!-- <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
+<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> -->
+<!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
+<script src="lib/jquery-1.12.0.min.js"></script>
+<script src="lib/jquery-ui.min.js"></script>
+<script src="lib/bootstrap.min.js"></script>
+<script src="lib/d3.min.js"></script>
 <script src="lib/underscore-min.js"></script>
 <script type="text/javascript"  src="lib/crossfilter.min.js"></script>
 
@@ -94,7 +114,7 @@ div.tips{
 </div>
 
 <div class="row" id="major">
-      
+
       <div id="chart_title" class="col-md-12">
         <h3>Major Migration</h2>
         <p>How interest of major changes during three years?</p>
@@ -122,7 +142,7 @@ div.tips{
           <p style="font-weight:bold;">Filter links greater than <input type="text" class="text-primary" id="amount" style="border:0; width:50px">
           </p>
           <div id="slider" style="width:160px; margin-left:10px;"></div>
-        
+
         </div>
         <div id="bestfit_legend"></div>
         <div id="major_legend"></div>
@@ -149,7 +169,7 @@ div.tips{
           <label class="clusterbtn btn btn-default" id="changeT3">
             <input type="radio" name="options"> Migration in Second Year (T2 to T3)
           </label>
-        </div>    
+        </div>
         <div id="cluster"></div>
         <div id="cluster_legend">
           <div id="gender_legend" class="col-md-2"></div>
@@ -161,7 +181,7 @@ div.tips{
         </div>
       </div>
     </div>
-    <div id="footer"><p class="text-right">Visualization created by Mengying DU, Yuebai Xu</p></div>
+    <!-- <div id="footer"><p class="text-right">Visualization created by Mengying DU</p></div> -->
 </div>
 
 
@@ -178,6 +198,3 @@ div.tips{
 </div>
 </body>
 </html>
-
-
-
